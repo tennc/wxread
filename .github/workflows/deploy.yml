@@ -1,4 +1,4 @@
-name: wxread
+name: deploy
 
 on:
   schedule:
