@@ -21,22 +21,6 @@ READ_URL = "https://weread.qq.com/web/book/read"
 RENEW_URL = "https://weread.qq.com/web/login/renewal"
 
 
-def convert(curl_command):
-    """提取headers与cookies"""
-    # 提取 headers
-    for match in re.findall(r"-H '([^:]+): ([^']+)'", curl_command):
-        headers[match[0]] = match[1]
-
-    # 提取 cookies
-    cookies = {}
-    cookie_string = headers.pop('cookie', '')
-    for cookie in cookie_string.split('; '):
-        key, value = cookie.split('=', 1)
-        cookies[key] = value
-
-    return headers, cookies
-
-
 def encode_data(data):
     """数据编码"""
     return '&'.join(f"{k}={urllib.parse.quote(str(data[k]), safe='')}" for k in sorted(data.keys()))
@@ -92,9 +76,10 @@ while index <= READ_NUM:
             logging.info(f"✅ 密钥刷新成功，新密钥：{new_skey}")
             logging.info(f"🔄 重新本次阅读。")
         else:
-            logging.error("❌ 无法获取新密钥或者配置有误，终止运行。")
-            push("❌ 无法获取新密钥或者配置有误，终止运行。", PUSH_METHOD)
-            raise Exception("❌ 无法获取新密钥，终止运行。")
+            ERROR_CODE = "❌ 无法获取新密钥或者WXREAD_CURL_BASH配置有误，终止运行。"
+            logging.error(ERROR_CODE)
+            push(ERROR_CODE, PUSH_METHOD)
+            raise Exception(ERROR_CODE)
     data.pop('s')
 
 logging.info("🎉 阅读脚本已完成！")
